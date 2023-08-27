@@ -9,11 +9,18 @@ export const createDosenProdiUseCase = async (
   next: NextFunction
 ) => {
   try {
-    const { nidn, kelamin, password, namaLengkap, noTelfon, programStudi } =
-      req.body;
+    const {
+      email,
+      nidn,
+      kelamin,
+      password,
+      namaLengkap,
+      noTelfon,
+      programStudi,
+    } = req.body;
     const dataExist = await DosenProdi.findOne({ nidn: nidn });
 
-    if (!dataExist) {
+    if (dataExist) {
       return res.status(400).send({
         success: false,
         data: null,
@@ -28,6 +35,7 @@ export const createDosenProdiUseCase = async (
       namaLengkap,
       noTelfon,
       programStudi,
+      email,
     });
 
     return res.send({
@@ -64,8 +72,16 @@ export const updateDosenProdiUseCase = async (
   next: NextFunction
 ) => {
   try {
-    const { nidn, kelamin, password, namaLengkap, noTelfon, programStudi, id } =
-      req.body;
+    const {
+      email,
+      nidn,
+      kelamin,
+      password,
+      namaLengkap,
+      noTelfon,
+      programStudi,
+      id,
+    } = req.body;
     const existData = await DosenProdi.findById(
       new mongoose.Types.ObjectId(id)
     );
@@ -90,6 +106,7 @@ export const updateDosenProdiUseCase = async (
 
     existData.nidn = nidn;
     existData.kelamin = kelamin;
+    existData.email = email;
     // existData.password = password;
     existData.namaLengkap = namaLengkap;
     existData.noTelfon = noTelfon;
@@ -120,6 +137,35 @@ export const deleteDosenProdiUseCase = async (
       success: true,
       data: null,
       message: 'Success delete dosen prodi',
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const getDetailDosenProdiUseCase = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const existData = await DosenProdi.findById(
+      new mongoose.Types.ObjectId(id)
+    );
+
+    if (!existData) {
+      return res.status(400).send({
+        success: false,
+        data: null,
+        message: 'Dosen prodi tidak ditemukan',
+      });
+    }
+
+    return res.send({
+      success: true,
+      data: existData,
+      message: 'Success get detail dosen prodi',
     });
   } catch (e) {
     next(e);

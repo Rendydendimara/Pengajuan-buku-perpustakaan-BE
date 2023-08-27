@@ -7,6 +7,7 @@ export interface IDosenProdi {
   password: string | null;
   namaLengkap: string | null;
   noTelfon: string | null;
+  email: string | null;
   programStudi: string;
   token: string | null;
   createdAt: Date;

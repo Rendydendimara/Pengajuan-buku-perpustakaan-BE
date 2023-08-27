@@ -5,6 +5,7 @@ export interface IAdmin {
   nidn: string;
   kelamin: 'L' | 'P';
   password: string | null;
+  email: string | null;
   namaLengkap: string | null;
   noTelfon: string | null;
   token: string | null;

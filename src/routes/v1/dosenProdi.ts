@@ -3,6 +3,7 @@ import { asyncErrorHandler } from '../../middleware';
 import {
   createDosenProdiUseCase,
   deleteDosenProdiUseCase,
+  getDetailDosenProdiUseCase,
   getListDosenProdiUseCase,
   updateDosenProdiUseCase,
 } from '../../usecase/DosenProdi';
@@ -15,6 +16,10 @@ dosenProdiRouter.put('/update', asyncErrorHandler(updateDosenProdiUseCase));
 dosenProdiRouter.delete(
   '/delete/:id',
   asyncErrorHandler(deleteDosenProdiUseCase)
+);
+dosenProdiRouter.get(
+  '/detail/:id',
+  asyncErrorHandler(getDetailDosenProdiUseCase)
 );
 
 export default dosenProdiRouter;

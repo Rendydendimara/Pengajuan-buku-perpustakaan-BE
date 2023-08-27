@@ -3,6 +3,7 @@ import { asyncErrorHandler } from '../../middleware';
 import {
   createKatalogBukuUseCase,
   deleteKatalogBukuUseCase,
+  getDetailKatalogBukuUseCase,
   getListKatalogBukuUseCase,
   updateKatalogBukuUseCase,
 } from '../../usecase/KatalogBuku';
@@ -15,6 +16,10 @@ katalogBukuRouter.put('/update', asyncErrorHandler(updateKatalogBukuUseCase));
 katalogBukuRouter.delete(
   '/delete/:id',
   asyncErrorHandler(deleteKatalogBukuUseCase)
+);
+katalogBukuRouter.get(
+  '/detail/:id',
+  asyncErrorHandler(getDetailKatalogBukuUseCase)
 );
 
 export default katalogBukuRouter;

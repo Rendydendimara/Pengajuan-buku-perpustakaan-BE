@@ -88,3 +88,32 @@ export const deleteKatalogBukuUseCase = async (
     next(e);
   }
 };
+
+export const getDetailKatalogBukuUseCase = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const existData = await KatalogBuku.findById(
+      new mongoose.Types.ObjectId(id)
+    );
+
+    if (!existData) {
+      return res.status(400).send({
+        success: false,
+        data: null,
+        message: 'Katalog tidak ditemukan',
+      });
+    }
+
+    return res.send({
+      success: true,
+      data: existData,
+      message: 'Success get detail katalog',
+    });
+  } catch (e) {
+    next(e);
+  }
+};

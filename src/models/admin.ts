@@ -37,6 +37,11 @@ const AdminSchema: Schema<AdminDocument> = new Schema({
   noTelfon: {
     type: String,
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   token: {
     type: String,
     default: null,

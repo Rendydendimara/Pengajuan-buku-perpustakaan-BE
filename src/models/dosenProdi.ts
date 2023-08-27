@@ -45,7 +45,11 @@ const DosenProdiSchema: Schema<DosenProdiDocument> = new Schema({
     type: String,
     default: null,
   },
-
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   isSuspend: {
     type: Boolean,
     default: false,

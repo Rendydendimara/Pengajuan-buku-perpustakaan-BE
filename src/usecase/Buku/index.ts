@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import Buku from '../../models/buku';
-import KatalogBuku from '../../models/katalogBuku';
 
 export const createBukuUseCase = async (
   req: Request,
@@ -12,15 +11,15 @@ export const createBukuUseCase = async (
     const { judul, penulis, katalog, tahunTerbit, bahasa, prodi } = req.body;
     const dataExist = await Buku.findOne({ judul: judul });
 
-    if (!dataExist) {
+    if (dataExist) {
       return res.status(400).send({
         success: false,
         data: null,
-        message: 'Juduk buku sudah ada didatabase',
+        message: 'Judul buku sudah ada didatabase',
       });
     }
 
-    await KatalogBuku.create({
+    await Buku.create({
       judul,
       penulis,
       katalog,
@@ -45,7 +44,10 @@ export const getListBukuUseCase = async (
   next: NextFunction
 ) => {
   try {
-    const data = await Buku.find();
+    const data = await Buku.find().populate({
+      path: 'katalog',
+      select: 'name',
+    });
 
     return res.send({
       success: true,
@@ -139,6 +141,33 @@ export const bulkBukuKatalogUseCase = async (
       success: true,
       data: null,
       message: 'Success bulk buku katalog',
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const getDetailBukuUseCase = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const existData = await Buku.findById(new mongoose.Types.ObjectId(id));
+
+    if (!existData) {
+      return res.status(400).send({
+        success: false,
+        data: null,
+        message: 'Buku tidak ditemukan',
+      });
+    }
+
+    return res.send({
+      success: true,
+      data: existData,
+      message: 'Success get detail buku',
     });
   } catch (e) {
     next(e);

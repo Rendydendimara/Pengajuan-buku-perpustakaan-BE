@@ -12,6 +12,7 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import path from 'path';
 import config from './config';
+import { createAdminSeeds } from './db/seed/admin';
 
 require('dotenv').config();
 const debug = Debug('backend-pengajuanbukuperpusunwina:server');
@@ -28,6 +29,7 @@ for (const folder of folders) {
 // Init MongoDB
 connectDB(() => {
   console.log('Successfully connected to database');
+  // createAdminSeeds();
   // createKategoriMakalahSeeds();
   // createAdminSeeds();
   // addVariabelSeed();

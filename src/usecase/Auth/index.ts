@@ -44,7 +44,7 @@ export const loginUseCase = async (
 
     const token = createJWTToken({
       id: String(user._id),
-      user_type: user.type_user,
+      type: type,
     });
 
     user.token = token;
