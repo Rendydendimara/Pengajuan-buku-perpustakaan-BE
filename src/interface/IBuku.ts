@@ -8,7 +8,9 @@ export interface IBuku {
   tahunTerbit: string;
   bahasa: string;
   prodi: string;
+  harga: number;
   createdAt: Date;
   deletedAt: Date | null;
+  tanggalUpload: Date | null;
   updatedAt: Date | null;
 }

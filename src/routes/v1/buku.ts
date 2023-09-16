@@ -8,6 +8,7 @@ import {
   updateBukuUseCase,
   bulkBukuPerpusUseCase,
   getDetailBukuUseCase,
+  bulkBukuKatalogUseCase,
 } from '../../usecase/Buku';
 
 const bukuRouter = express.Router();
@@ -24,7 +25,7 @@ bukuRouter.post(
 bukuRouter.post(
   '/bulk-buku-katalog',
   uploadXls.single('file'),
-  asyncErrorHandler(bulkBukuPerpusUseCase)
+  asyncErrorHandler(bulkBukuKatalogUseCase)
 );
 bukuRouter.get('/detail/:id', asyncErrorHandler(getDetailBukuUseCase));
 export default bukuRouter;

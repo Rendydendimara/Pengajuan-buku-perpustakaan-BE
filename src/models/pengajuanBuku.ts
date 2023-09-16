@@ -24,11 +24,19 @@ const PengajuanBukuSchema: Schema<PengajuanBukuDocument> = new Schema({
     required: true,
     default: 'diproses',
   },
-  buku: {
-    type: Schema.Types.ObjectId,
-    ref: 'Buku',
-    required: true,
-  },
+  buku: [
+    {
+      _id: {
+        type: Schema.Types.ObjectId,
+        ref: 'Buku',
+        required: true,
+      },
+      jumlah: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
   dosenProdi: {
     type: Schema.Types.ObjectId,
     ref: 'DosenProdi',

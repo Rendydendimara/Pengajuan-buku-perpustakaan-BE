@@ -1,10 +1,14 @@
 import { Types } from 'mongoose';
 
+interface IBuku {
+  _id: Types.ObjectId | Record<string, unknown>;
+  jumlah: number;
+}
+
 export interface IPengajuanBuku {
   _id: Types.ObjectId | Record<string, unknown>;
-  buku: Types.ObjectId | Record<string, unknown>;
+  buku: IBuku[];
   dosenProdi: Types.ObjectId | Record<string, unknown>;
-  jumlah: number;
   pesanAdmin: string;
   pesanDosen: string;
   status: string;

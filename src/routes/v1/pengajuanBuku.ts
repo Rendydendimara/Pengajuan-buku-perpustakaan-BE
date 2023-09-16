@@ -1,8 +1,10 @@
 import express from 'express';
 import { asyncErrorHandler } from '../../middleware';
 import {
+  changeStatusPengajuanBukuUseCase,
   createPengajuanBukuUseCase,
   deletePengajuanBukuUseCase,
+  getDetailPengajuanBukuUseCase,
   getListPengajuanBukuByDosenUseCase,
   getListPengajuanBukuUseCase,
   updatePengajuanBukuUseCase,
@@ -29,6 +31,14 @@ pengajuanBukuRouter.put(
 pengajuanBukuRouter.delete(
   '/delete/:id',
   asyncErrorHandler(deletePengajuanBukuUseCase)
+);
+pengajuanBukuRouter.get(
+  '/detail/:id',
+  asyncErrorHandler(getDetailPengajuanBukuUseCase)
+);
+pengajuanBukuRouter.post(
+  '/change-status',
+  asyncErrorHandler(changeStatusPengajuanBukuUseCase)
 );
 
 export default pengajuanBukuRouter;

@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import Buku from '../../models/buku';
+import config from '../../config';
+import xlsx from 'node-xlsx';
 
 export const createBukuUseCase = async (
   req: Request,
@@ -137,11 +139,27 @@ export const bulkBukuKatalogUseCase = async (
   next: NextFunction
 ) => {
   try {
-    return res.send({
-      success: true,
-      data: null,
-      message: 'Success bulk buku katalog',
-    });
+    const { uploadDate, catalogId, prodi } = req.body;
+    if (req.file) {
+      const workSheetsFromFile = xlsx.parse(`${req.file.path}`);
+      const resultImport = await importBulkCatalogToDB(
+        workSheetsFromFile,
+        uploadDate,
+        catalogId,
+        prodi
+      );
+      return res.send({
+        success: true,
+        data: resultImport,
+        message: 'Success bulk buku catalog',
+      });
+    } else {
+      return res.status(400).send({
+        success: false,
+        data: null,
+        message: 'File tidak ditemukan',
+      });
+    }
   } catch (e) {
     next(e);
   }
@@ -173,3 +191,49 @@ export const getDetailBukuUseCase = async (
     next(e);
   }
 };
+
+const importBulkCatalogToDB = (
+  excell: any,
+  uploadDate: any,
+  catalogId: any,
+  prodi: any
+) =>
+  new Promise(async (resolve, reject) => {
+    const errorDuplicate: any = [];
+    const errorUpload: any = [];
+    const successUpload: any = [];
+    if (excell) {
+      for (let i = 0; i < excell.length; i++) {
+        for (let j = 0; j < excell[i].data.length; j++) {
+          if (typeof excell[i].data[j][0] === 'number') {
+            let dataBuku = {
+              judul: excell[i].data[j][1],
+              penulis: excell[i].data[j][2],
+              katalog: catalogId,
+              tahunTerbit: excell[i].data[j][6],
+              bahasa: excell[i].data[j][9],
+              prodi: prodi,
+              harga: excell[i].data[j][3],
+              tanggalUpload: uploadDate,
+            };
+            try {
+              await Buku.create(dataBuku);
+              successUpload.push(dataBuku);
+            } catch (err) {
+              console.log(err.code);
+              if (err.code === 11000) {
+                errorDuplicate.push(dataBuku);
+              } else {
+                errorUpload.push(dataBuku);
+              }
+            }
+          }
+        }
+      }
+    }
+    resolve({
+      errorDuplicate,
+      errorUpload,
+      successUpload,
+    });
+  });

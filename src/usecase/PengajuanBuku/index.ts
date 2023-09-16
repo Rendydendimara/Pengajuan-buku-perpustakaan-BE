@@ -10,15 +10,15 @@ export const createPengajuanBukuUseCase = async (
   next: NextFunction
 ) => {
   try {
-    const { buku, dosenProdi, jumlah, pesanDosen } = req.body;
-
+    const { dataBuku, dosenProdi, pesanDosen } = req.body;
+    const dataBukuJSONParse = JSON.parse(dataBuku);
+    const createdAt = new Date();
     await PengajuanBuku.create({
-      buku,
-      dosenProdi,
-      jumlah,
-      pesanDosen,
+      buku: dataBukuJSONParse,
+      dosenProdi: new mongoose.Types.ObjectId(dosenProdi),
+      pesanDosen: pesanDosen,
+      createdAt: createdAt,
     });
-
     return res.send({
       success: true,
       data: null,
@@ -35,8 +35,15 @@ export const getListPengajuanBukuUseCase = async (
   next: NextFunction
 ) => {
   try {
-    const data = await PengajuanBuku.find();
-
+    const data = await PengajuanBuku.find()
+      .populate({
+        path: 'dosenProdi',
+        select: 'namaLengkap programStudi',
+      })
+      .populate({
+        path: 'buku._id',
+        select: 'judul prodi katalog',
+      });
     return res.send({
       success: true,
       data: data,
@@ -56,6 +63,9 @@ export const getListPengajuanBukuByDosenUseCase = async (
     const { dosenProdi } = req.params;
     const data = await PengajuanBuku.find({
       dosenProdi: new mongoose.Types.ObjectId(dosenProdi),
+    }).populate({
+      path: 'buku._id',
+      select: 'judul prodi katalog',
     });
 
     return res.send({
@@ -67,6 +77,7 @@ export const getListPengajuanBukuByDosenUseCase = async (
     next(e);
   }
 };
+
 export const updatePengajuanBukuUseCase = async (
   req: Request,
   res: Response,
@@ -87,7 +98,7 @@ export const updatePengajuanBukuUseCase = async (
     }
 
     existData.buku = buku;
-    existData.jumlah = jumlah;
+    // existData.jumlah = jumlah;
     existData.pesanAdmin = pesanAdmin;
     existData.pesanDosen = pesanDosen;
     existData.status = status;
@@ -117,6 +128,71 @@ export const deletePengajuanBukuUseCase = async (
       success: true,
       data: null,
       message: 'Success delete pengajuan buku',
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const getDetailPengajuanBukuUseCase = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const data = await PengajuanBuku.findById(
+      new mongoose.Types.ObjectId(id)
+    ).populate({
+      path: 'buku._id',
+      select: 'judul prodi katalog',
+      populate: {
+        path: 'katalog',
+        select: 'name',
+      },
+    });
+
+    if (data) {
+      return res.send({
+        success: true,
+        data: data,
+        message: 'Success get detail pengajuan buku',
+      });
+    } else {
+      return res.status(400).send({
+        success: false,
+        data: null,
+        message: 'Pengajuan tidak ditemukan',
+      });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const changeStatusPengajuanBukuUseCase = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { status, pesan, id } = req.body;
+    const data = await PengajuanBuku.findById(new mongoose.Types.ObjectId(id));
+    if (!data) {
+      return res.status(400).send({
+        success: false,
+        data: null,
+        message: 'Pengajuan buku tidak ditemukan',
+      });
+    }
+    data.status = status;
+    data.pesanAdmin = pesan;
+    await data.save();
+
+    return res.send({
+      success: true,
+      data: null,
+      message: 'Success change status pengajuan buku',
     });
   } catch (e) {
     next(e);

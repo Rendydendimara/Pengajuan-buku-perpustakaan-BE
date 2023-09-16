@@ -18,7 +18,7 @@ export const loginUseCase = async (
       user = await Admin.findOne({
         email: email,
       });
-    } else if (type === 'dosen') {
+    } else if (type === 'prodi') {
       user = await DosenProdi.findOne({
         nidn: nidn,
       });
@@ -72,7 +72,7 @@ export const chekUserLoginUseCase = async (
     user = await Admin.findOne({
       token: token,
     });
-  } else if (type === 'dosen') {
+  } else if (type === 'prodi') {
     user = await DosenProdi.findOne({
       token: token,
     });
@@ -114,7 +114,7 @@ export const logoutUserUseCase = async (
 
   if (type === 'admin') {
     user = await Admin.findById(new mongoose.Types.ObjectId(userId));
-  } else if (type === 'dosen') {
+  } else if (type === 'prodi') {
     user = await DosenProdi.findById(new mongoose.Types.ObjectId(userId));
   }
 

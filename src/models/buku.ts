@@ -16,6 +16,7 @@ const BukuSchema: Schema<BukuDocument> = new Schema({
   judul: {
     type: String,
     required: true,
+    unique: true,
   },
   penulis: {
     type: String,
@@ -28,6 +29,9 @@ const BukuSchema: Schema<BukuDocument> = new Schema({
   bahasa: {
     type: String,
     required: true,
+  },
+  harga: {
+    type: Number,
   },
   katalog: {
     type: Schema.Types.ObjectId,
@@ -43,6 +47,10 @@ const BukuSchema: Schema<BukuDocument> = new Schema({
     default: new Date(),
   },
   deletedAt: {
+    type: Date,
+    default: null,
+  },
+  tanggalUpload: {
     type: Date,
     default: null,
   },
