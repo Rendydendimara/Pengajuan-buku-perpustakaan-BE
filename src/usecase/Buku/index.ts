@@ -28,6 +28,7 @@ export const createBukuUseCase = async (
       tahunTerbit,
       bahasa,
       prodi,
+      tipeBuku: 'byKatalog',
     });
 
     return res.send({
@@ -46,7 +47,8 @@ export const getListBukuUseCase = async (
   next: NextFunction
 ) => {
   try {
-    const data = await Buku.find().populate({
+    const { type } = req.query;
+    const data = await Buku.find({ tipeBuku: type }).populate({
       path: 'katalog',
       select: 'name',
     });
@@ -123,11 +125,26 @@ export const bulkBukuPerpusUseCase = async (
   next: NextFunction
 ) => {
   try {
-    return res.send({
-      success: true,
-      data: null,
-      message: 'Success bulk buku perpus',
-    });
+    const { uploadDate, prodi } = req.body;
+    if (req.file) {
+      const workSheetsFromFile = xlsx.parse(`${req.file.path}`);
+      const resultImport = await importBulkPerpusToDB(
+        workSheetsFromFile,
+        uploadDate,
+        prodi
+      );
+      return res.send({
+        success: true,
+        data: resultImport,
+        message: 'Success bulk buku perpus',
+      });
+    } else {
+      return res.status(400).send({
+        success: false,
+        data: null,
+        message: 'File tidak ditemukan',
+      });
+    }
   } catch (e) {
     next(e);
   }
@@ -192,6 +209,30 @@ export const getDetailBukuUseCase = async (
   }
 };
 
+export const countTypeBukuUseCase = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const totalBukuKatalog = await Buku.countDocuments({
+      tipeBuku: 'byKatalog',
+    });
+    const totalBukuPerpus = await Buku.countDocuments({ tipeBuku: 'byPerpus' });
+
+    return res.send({
+      success: true,
+      data: {
+        totalBukuKatalog,
+        totalBukuPerpus,
+      },
+      message: 'Success delete buku',
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
 const importBulkCatalogToDB = (
   excell: any,
   uploadDate: any,
@@ -215,6 +256,48 @@ const importBulkCatalogToDB = (
               prodi: prodi,
               harga: excell[i].data[j][3],
               tanggalUpload: uploadDate,
+              tipeBuku: 'byKatalog',
+            };
+            try {
+              await Buku.create(dataBuku);
+              successUpload.push(dataBuku);
+            } catch (err) {
+              console.log(err.code);
+              if (err.code === 11000) {
+                errorDuplicate.push(dataBuku);
+              } else {
+                errorUpload.push(dataBuku);
+              }
+            }
+          }
+        }
+      }
+    }
+    resolve({
+      errorDuplicate,
+      errorUpload,
+      successUpload,
+    });
+  });
+
+const importBulkPerpusToDB = (excell: any, uploadDate: any, prodi: any) =>
+  new Promise(async (resolve, reject) => {
+    const errorDuplicate: any = [];
+    const errorUpload: any = [];
+    const successUpload: any = [];
+    if (excell) {
+      for (let i = 0; i < excell.length; i++) {
+        for (let j = 0; j < excell[i].data.length; j++) {
+          if (typeof excell[i].data[j][0] === 'number') {
+            let dataBuku = {
+              judul: excell[i].data[j][1],
+              penulis: excell[i].data[j][2],
+              tahunTerbit: excell[i].data[j][6],
+              bahasa: excell[i].data[j][9],
+              prodi: prodi,
+              harga: excell[i].data[j][3],
+              tanggalUpload: uploadDate,
+              tipeBuku: 'byPerpus',
             };
             try {
               await Buku.create(dataBuku);

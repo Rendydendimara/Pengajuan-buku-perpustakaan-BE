@@ -13,4 +13,5 @@ export interface IBuku {
   deletedAt: Date | null;
   tanggalUpload: Date | null;
   updatedAt: Date | null;
+  tipeBuku: 'byKatalog' | 'byPerpus';
 }

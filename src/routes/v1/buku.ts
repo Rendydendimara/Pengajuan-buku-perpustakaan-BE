@@ -9,6 +9,7 @@ import {
   bulkBukuPerpusUseCase,
   getDetailBukuUseCase,
   bulkBukuKatalogUseCase,
+  countTypeBukuUseCase,
 } from '../../usecase/Buku';
 
 const bukuRouter = express.Router();
@@ -28,4 +29,6 @@ bukuRouter.post(
   asyncErrorHandler(bulkBukuKatalogUseCase)
 );
 bukuRouter.get('/detail/:id', asyncErrorHandler(getDetailBukuUseCase));
+bukuRouter.get('/count-buku', asyncErrorHandler(countTypeBukuUseCase));
+
 export default bukuRouter;

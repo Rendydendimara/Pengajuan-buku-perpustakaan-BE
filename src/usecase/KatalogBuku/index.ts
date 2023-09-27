@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import KatalogBuku from '../../models/katalogBuku';
 import mongoose from 'mongoose';
+import Buku from '../../models/buku';
 
 export const createKatalogBukuUseCase = async (
   req: Request,
@@ -78,7 +79,7 @@ export const deleteKatalogBukuUseCase = async (
   try {
     const { id } = req.params;
     await KatalogBuku.findByIdAndDelete(new mongoose.Types.ObjectId(id));
-
+    await Buku.deleteMany({ katalog: new mongoose.Types.ObjectId(id) });
     return res.send({
       success: true,
       data: null,

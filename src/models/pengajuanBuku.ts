@@ -37,6 +37,18 @@ const PengajuanBukuSchema: Schema<PengajuanBukuDocument> = new Schema({
       },
     },
   ],
+  bukuLink: [
+    {
+      jumlah: {
+        type: Number,
+        required: true,
+      },
+      linkBuku: {
+        type: String,
+        default: null,
+      },
+    },
+  ],
   dosenProdi: {
     type: Schema.Types.ObjectId,
     ref: 'DosenProdi',

@@ -36,11 +36,14 @@ const BukuSchema: Schema<BukuDocument> = new Schema({
   katalog: {
     type: Schema.Types.ObjectId,
     ref: 'KatalogBuku',
-    required: true,
+    // required: true,
   },
   prodi: {
     type: String,
-    required: true,
+    // required: true,
+  },
+  tipeBuku: {
+    type: String,
   },
   createdAt: {
     type: Date,

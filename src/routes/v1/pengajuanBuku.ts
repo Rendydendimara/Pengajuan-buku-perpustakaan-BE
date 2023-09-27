@@ -7,6 +7,7 @@ import {
   getDetailPengajuanBukuUseCase,
   getListPengajuanBukuByDosenUseCase,
   getListPengajuanBukuUseCase,
+  getRekapanPengajuanBukuUseCase,
   updatePengajuanBukuUseCase,
 } from '../../usecase/PengajuanBuku';
 
@@ -39,6 +40,10 @@ pengajuanBukuRouter.get(
 pengajuanBukuRouter.post(
   '/change-status',
   asyncErrorHandler(changeStatusPengajuanBukuUseCase)
+);
+pengajuanBukuRouter.get(
+  '/get-rekapan',
+  asyncErrorHandler(getRekapanPengajuanBukuUseCase)
 );
 
 export default pengajuanBukuRouter;

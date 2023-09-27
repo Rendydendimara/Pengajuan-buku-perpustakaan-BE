@@ -10,11 +10,13 @@ export const createPengajuanBukuUseCase = async (
   next: NextFunction
 ) => {
   try {
-    const { dataBuku, dosenProdi, pesanDosen } = req.body;
+    const { dataBuku, dosenProdi, pesanDosen, bukuLink } = req.body;
     const dataBukuJSONParse = JSON.parse(dataBuku);
+    const bukuLinkJSONParse = JSON.parse(bukuLink);
     const createdAt = new Date();
     await PengajuanBuku.create({
       buku: dataBukuJSONParse,
+      bukuLink: bukuLinkJSONParse,
       dosenProdi: new mongoose.Types.ObjectId(dosenProdi),
       pesanDosen: pesanDosen,
       createdAt: createdAt,
@@ -193,6 +195,37 @@ export const changeStatusPengajuanBukuUseCase = async (
       success: true,
       data: null,
       message: 'Success change status pengajuan buku',
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const getRekapanPengajuanBukuUseCase = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = await PengajuanBuku.find({ deletedAt: null })
+      .select('buku bukuLink createdAt dosenProdi')
+      .populate({
+        path: 'buku._id',
+        select: 'judul prodi katalog penulis tahunTerbit',
+        populate: {
+          path: 'katalog',
+          select: 'name',
+        },
+      })
+      .populate({
+        path: 'dosenProdi',
+        select: 'programStudi',
+      });
+
+    return res.send({
+      success: true,
+      data: data,
+      message: 'Success get rekapan pengajuan buku',
     });
   } catch (e) {
     next(e);
