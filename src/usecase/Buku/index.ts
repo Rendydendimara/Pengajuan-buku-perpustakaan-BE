@@ -47,8 +47,40 @@ export const getListBukuUseCase = async (
   next: NextFunction
 ) => {
   try {
-    const { type } = req.query;
-    const data = await Buku.find({ tipeBuku: type }).populate({
+    const resQuery: any = req.query;
+    const { type, katalog, prodi } = resQuery;
+    let filterType: any = { $ne: null };
+    let filterKatalog: any = { $ne: null };
+    let filterProdi: any = { $ne: null };
+
+    if (type) {
+      if (type !== 'all') {
+        filterType = { $eq: type };
+      }
+    }
+    console.log('katalog', katalog);
+    if (katalog) {
+      filterKatalog = { $eq: new mongoose.Types.ObjectId(katalog) };
+    }
+    if (prodi) {
+      filterProdi = { $eq: prodi };
+    }
+    if (type === 'byPerpus') {
+      filterKatalog = { $eq: null };
+    }
+
+    console.log({
+      deletedAt: null,
+      katalog: filterKatalog,
+      tipeBuku: filterType,
+      prodi: filterProdi,
+    });
+    const data = await Buku.find({
+      deletedAt: null,
+      katalog: filterKatalog,
+      tipeBuku: filterType,
+      prodi: filterProdi,
+    }).populate({
       path: 'katalog',
       select: 'name',
     });
