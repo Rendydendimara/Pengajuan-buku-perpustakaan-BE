@@ -3,6 +3,9 @@ import PengajuanBuku from '../../models/pengajuanBuku';
 import mongoose from 'mongoose';
 import Buku from '../../models/buku';
 import KatalogBuku from '../../models/katalogBuku';
+import createRekapan from '../../utils/createRekapan';
+import { IBukuRekapan } from '../../interface';
+import moment from 'moment';
 
 export const createPengajuanBukuUseCase = async (
   req: Request,
@@ -230,4 +233,138 @@ export const getRekapanPengajuanBukuUseCase = async (
   } catch (e) {
     next(e);
   }
+};
+
+export const cetakRekapanBukuUseCase = async (
+  req: Request | any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = await PengajuanBuku.find({ deletedAt: null })
+      .select('buku bukuLink createdAt dosenProdi')
+      .populate({
+        path: 'buku._id',
+        select: 'judul prodi katalog penulis tahunTerbit',
+        populate: {
+          path: 'katalog',
+          select: 'name',
+        },
+      })
+      .populate({
+        path: 'dosenProdi',
+        select: 'programStudi',
+      });
+
+    let dataResult: any = [];
+
+    data.forEach((dt: any) => {
+      const { _id, buku, bukuLink, dosenProdi, createdAt } = dt;
+      dataResult.push({
+        _id,
+        buku,
+        bukuLink,
+        dosenProdi,
+        createdAt,
+        prodi: dt.dosenProdi.programStudi,
+      });
+    });
+
+    let pbi: IBukuRekapan[] = filterData('pbi', dataResult);
+    let man: IBukuRekapan[] = filterData('man', dataResult);
+    let ekm: IBukuRekapan[] = filterData('ekm', dataResult);
+    let pmt: IBukuRekapan[] = filterData('pmt', dataResult);
+    let ptk: IBukuRekapan[] = filterData('ptk', dataResult);
+    let agt: IBukuRekapan[] = filterData('agt', dataResult);
+    let agb: IBukuRekapan[] = filterData('agb', dataResult);
+    let thp: IBukuRekapan[] = filterData('thp', dataResult);
+    let hkm: IBukuRekapan[] = filterData('hkm', dataResult);
+    let tif: IBukuRekapan[] = filterData('tif', dataResult);
+    console.log('tif', tif);
+    // console.log('pbi', pbi);
+    // console.log('tif', tif);
+    // console.log('tif', tif);
+    // console.log('tif', tif);
+    // console.log('tif', tif);
+    // console.log('tif', tif);
+    // console.log('tif', tif);
+    // console.log('tif', tif);
+    // console.log('tif', tif);
+    // console.log('tif', tif);
+    // console.log('tif', tif);
+    // console.log('tif', tif);
+    // console.log('tif', tif);
+    // filterData('man', dataResult);
+    // let ekm: IBukuRekapan[] = [];
+    // let pmt: IBukuRekapan[] = [];
+    // let pbi: IBukuRekapan[] = [];
+    // let ptk: IBukuRekapan[] = [];
+    // let agt: IBukuRekapan[] = [];
+    // let agb: IBukuRekapan[] = [];
+    // let thp: IBukuRekapan[] = [];
+    // let hkm: IBukuRekapan[] = [];
+    // let man: IBukuRekapan[] = [];
+    // let tif: IBukuRekapan[] = [];
+
+    const invoicePath = `uploads/${new Date()
+      .getTime()
+      .toString()}-cetak-rekapan.pdf`;
+    createRekapan(
+      {
+        pbi,
+        man,
+        ekm,
+        pmt,
+        ptk,
+        agt,
+        agb,
+        thp,
+        hkm,
+        tif,
+      },
+      invoicePath
+    );
+    await delay(5000);
+
+    return res.download(invoicePath); // Set disposition and send it.
+  } catch (err) {
+    console.log('err', err);
+    next(err);
+  }
+};
+
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const filterData = (
+  prodi:
+    | 'hkm'
+    | 'pbi'
+    | 'man'
+    | 'ekm'
+    | 'pmt'
+    | 'ptk'
+    | 'agt'
+    | 'agb'
+    | 'thp'
+    | 'tif',
+  dataSource: any[]
+) => {
+  // console.log('dataSource', dataSource);
+  let result: IBukuRekapan[] = [];
+  dataSource
+    .filter((dt: any) => dt.prodi === prodi)
+    .map((dt: any) => {
+      dt.buku.forEach((buku: any) => {
+        if (buku._id) {
+          result.push({
+            judulBuku: buku._id.judul,
+            penulis: buku._id.penulis,
+            penerbit: buku._id.katalog.name,
+            tahunBuku: buku._id.tahunTerbit,
+            diBuat: moment(dt.createdAt).format('L'),
+          });
+        }
+      });
+    });
+  return result;
 };

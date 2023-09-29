@@ -9,6 +9,7 @@ import {
   getListPengajuanBukuUseCase,
   getRekapanPengajuanBukuUseCase,
   updatePengajuanBukuUseCase,
+  cetakRekapanBukuUseCase,
 } from '../../usecase/PengajuanBuku';
 
 const pengajuanBukuRouter = express.Router();
@@ -44,6 +45,10 @@ pengajuanBukuRouter.post(
 pengajuanBukuRouter.get(
   '/get-rekapan',
   asyncErrorHandler(getRekapanPengajuanBukuUseCase)
+);
+pengajuanBukuRouter.get(
+  '/cetak-rekapan',
+  asyncErrorHandler(cetakRekapanBukuUseCase)
 );
 
 export default pengajuanBukuRouter;
