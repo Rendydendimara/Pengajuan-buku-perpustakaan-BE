@@ -6,7 +6,7 @@ import { getProdiName } from '../utils';
 
 function createRekapan(data: IDataRekapan, path: any) {
   console.log('data', data);
-  let doc = new PDFDocument({ size: 'A4', margin: 50 });
+  let doc = new PDFDocument({ size: 'A1', margin: 50 });
 
   generateHeader(doc);
   // generateCustomerInformation(doc, invoice);
@@ -30,8 +30,7 @@ function generateHeader(doc: any) {
   doc
     .fillColor('#444444')
     .fontSize(20)
-    .text('Rekapan Pengajuan')
-    .text('Buku Perpustakaan')
+    .text('Rekapan Pengajuan Buku Perpustakaan')
     .fontSize(10)
     .text('Universitas Kristen Wira Wacana Sumba.', { align: 'right' })
     .text('Fakultas sains dan teknologi', { align: 'right' })
@@ -98,8 +97,8 @@ function generateInvoiceTable(
       penerbit: data[i]?.penerbit,
       tahunBuku: data[i]?.tahunBuku,
       diBuat: moment(data[i]?.diBuat).format('L'),
+      isGenerateData:true
     });
-    generateHr(doc, doc.y + 20);
   }
 }
 
@@ -123,19 +122,20 @@ function generateTableRow(
     penerbit: any;
     tahunBuku: any;
     diBuat: any;
+    isGenerateData?:boolean
   }
 ) {
   let yPos = doc.y;
-
+  
   doc
     .fontSize(8)
     .text(data.judulBuku, 50, yPos)
-    .text(data.penulis, 200, yPos)
-    .text(data.penerbit, 250, yPos)
-    .text(data.tahunBuku, 350, yPos)
+    .text(data.penulis, 900, yPos)
+    .text(data.penerbit, 1200, yPos)
+    .text(data.tahunBuku, 1400, yPos)
     .text(
       data.diBuat === 'Dibuat' ? 'Dibuat' : moment(data.diBuat).format('L'),
-      400,
+      1500,
       yPos
     );
 

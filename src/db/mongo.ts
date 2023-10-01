@@ -1,6 +1,6 @@
 import { connect, ConnectOptions } from 'mongoose';
 import config from '../config';
-export const MONGO_URI_LOCALHOST = 'mongodb://127.0.0.1:27017/semnasunkriswina';
+export const MONGO_URI_LOCALHOST = '';
 export const MONGO_URI_STAGGING = '';
 export const MONGO_URI_PRODUCTION = '';
 export const MONGO_URI = config.MONGO_URI;

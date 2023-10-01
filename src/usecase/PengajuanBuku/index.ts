@@ -280,31 +280,6 @@ export const cetakRekapanBukuUseCase = async (
     let thp: IBukuRekapan[] = filterData('thp', dataResult);
     let hkm: IBukuRekapan[] = filterData('hkm', dataResult);
     let tif: IBukuRekapan[] = filterData('tif', dataResult);
-    console.log('tif', tif);
-    // console.log('pbi', pbi);
-    // console.log('tif', tif);
-    // console.log('tif', tif);
-    // console.log('tif', tif);
-    // console.log('tif', tif);
-    // console.log('tif', tif);
-    // console.log('tif', tif);
-    // console.log('tif', tif);
-    // console.log('tif', tif);
-    // console.log('tif', tif);
-    // console.log('tif', tif);
-    // console.log('tif', tif);
-    // console.log('tif', tif);
-    // filterData('man', dataResult);
-    // let ekm: IBukuRekapan[] = [];
-    // let pmt: IBukuRekapan[] = [];
-    // let pbi: IBukuRekapan[] = [];
-    // let ptk: IBukuRekapan[] = [];
-    // let agt: IBukuRekapan[] = [];
-    // let agb: IBukuRekapan[] = [];
-    // let thp: IBukuRekapan[] = [];
-    // let hkm: IBukuRekapan[] = [];
-    // let man: IBukuRekapan[] = [];
-    // let tif: IBukuRekapan[] = [];
 
     const invoicePath = `uploads/${new Date()
       .getTime()

@@ -1,7 +1,7 @@
 {
-  "name": "backend-semnasunkriswina",
+  "name": "backend-pengajuanbukuperpustakaan",
   "version": "1.0.0",
-  "description": "Backend application for SEMNAS UNKRISWINA",
+  "description": "Backend application for Pengajuan Buku Perpustakaan",
   "main": "server.ts",
   "scripts": {
     "start": "npm run serve",

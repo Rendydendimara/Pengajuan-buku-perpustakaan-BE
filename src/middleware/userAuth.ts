@@ -1,14 +1,13 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { JWT_SECRET } from '../config/jwt';
-import User from '../models/user';
+import User from '../models/admin';
 
 // handle verify token
 export const isAuth =
   (type?: string) =>
   async (req: Request | any, res: Response, next: NextFunction) => {
-    const token =
-      req.headers['semnasunkriswinasumba-token'] || req.headers.authorization;
+    const token = req.headers['token'] || req.headers.authorization;
     if (!token) {
       return res.status(401).send({
         success: false,
@@ -27,13 +26,13 @@ export const isAuth =
       }
       const decoded = jwt.verify(token, JWT_SECRET);
       if (type) {
-        if (user.type_user !== type) {
-          return res.status(401).send({
-            success: false,
-            data: null,
-            message: 'Akses ditolak',
-          });
-        }
+        // if (user.type_user !== type) {
+        //   return res.status(401).send({
+        //     success: false,
+        //     data: null,
+        //     message: 'Akses ditolak',
+        //   });
+        // }
       }
       req.user = decoded;
     } catch (err) {
