@@ -50,7 +50,7 @@ export const getListBukuUseCase = async (
     const resQuery: any = req.query;
     const { type, katalog, prodi } = resQuery;
     let filterType: any = { $ne: null };
-    let filterKatalog: any = { $ne: null };
+    let filterKatalog: any = { $ne: '507f191e810c19729de860ea' }; // dummy object id
     let filterProdi: any = { $ne: null };
 
     if (type) {
@@ -283,8 +283,8 @@ const importBulkCatalogToDB = (
               judul: excell[i].data[j][1],
               penulis: excell[i].data[j][2],
               katalog: catalogId,
-              tahunTerbit: excell[i].data[j][6],
-              bahasa: excell[i].data[j][9],
+              tahunTerbit: excell[i].data[j][5],
+              bahasa: excell[i].data[j][10],
               prodi: prodi,
               harga: excell[i].data[j][3],
               tanggalUpload: uploadDate,
@@ -324,8 +324,8 @@ const importBulkPerpusToDB = (excell: any, uploadDate: any, prodi: any) =>
             let dataBuku = {
               judul: excell[i].data[j][1],
               penulis: excell[i].data[j][2],
-              tahunTerbit: excell[i].data[j][6],
-              bahasa: excell[i].data[j][9],
+              tahunTerbit: excell[i].data[j][5],
+              bahasa: excell[i].data[j][10],
               prodi: prodi,
               harga: excell[i].data[j][3],
               tanggalUpload: uploadDate,
