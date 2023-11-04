@@ -58,7 +58,6 @@ export const getListBukuUseCase = async (
         filterType = { $eq: type };
       }
     }
-    console.log('katalog', katalog);
     if (katalog) {
       filterKatalog = { $eq: new mongoose.Types.ObjectId(katalog) };
     }
@@ -69,12 +68,6 @@ export const getListBukuUseCase = async (
       filterKatalog = { $eq: null };
     }
 
-    console.log({
-      deletedAt: null,
-      katalog: filterKatalog,
-      tipeBuku: filterType,
-      prodi: filterProdi,
-    });
     const data = await Buku.find({
       deletedAt: null,
       katalog: filterKatalog,

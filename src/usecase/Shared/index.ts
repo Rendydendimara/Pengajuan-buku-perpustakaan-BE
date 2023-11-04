@@ -80,13 +80,6 @@ export const getStatistikSharedUseCase = async (
           $lt: new Date(new Date().getFullYear(), 12, 31),
         },
       });
-      console.log({
-        deletedAt: null,
-        createdAt: {
-          $gte: new Date(new Date().getFullYear(), 0, 31),
-          $lt: new Date(new Date().getFullYear(), 12, 31),
-        },
-      });
       const totalKatalog = await KatalogBuku.countDocuments({
         deletedAt: null,
         createdAt: {

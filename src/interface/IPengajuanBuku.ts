@@ -3,6 +3,7 @@ import { Types } from 'mongoose';
 interface IBuku {
   _id: Types.ObjectId | Record<string, unknown>;
   jumlah: number;
+  status: string;
 }
 interface IBukuLink {
   _id: Types.ObjectId | Record<string, unknown>;

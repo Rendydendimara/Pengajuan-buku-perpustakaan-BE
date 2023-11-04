@@ -9,7 +9,7 @@ import { IPengajuanBuku } from '../interface/IPengajuanBuku';
 export type PengajuanBukuDocument = Document & IPengajuanBuku;
 
 // For model
-interface IPengajuanBukuModel extends Model<PengajuanBukuDocument> {}
+interface IPengajuanBukuModel extends Model<PengajuanBukuDocument> { }
 
 // Create a Schema corresponding to the document interface.
 const PengajuanBukuSchema: Schema<PengajuanBukuDocument> = new Schema({
@@ -18,11 +18,6 @@ const PengajuanBukuSchema: Schema<PengajuanBukuDocument> = new Schema({
   },
   pesanDosen: {
     type: String,
-  },
-  status: {
-    type: String,
-    required: true,
-    default: 'diproses',
   },
   buku: [
     {
@@ -35,8 +30,18 @@ const PengajuanBukuSchema: Schema<PengajuanBukuDocument> = new Schema({
         type: Number,
         required: true,
       },
+      status: {
+        type: String,
+        required: true,
+        default: 'diproses',
+      },
     },
   ],
+  status: {
+    type: String,
+    required: true,
+    default: 'diproses',
+  },
   bukuLink: [
     {
       jumlah: {

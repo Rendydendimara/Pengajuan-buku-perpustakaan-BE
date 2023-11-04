@@ -4,22 +4,26 @@ import moment from 'moment';
 import { IBukuRekapan, IDataRekapan } from '../interface';
 import { getProdiName } from '../utils';
 
-function createRekapan(data: IDataRekapan, path: any) {
-  console.log('data', data);
+function createRekapan(dataMultiple: IDataRekapan, dataSingle: IBukuRekapan[], path: any, type: "single" | "multiple", prodi: any) {
   let doc = new PDFDocument({ size: 'A1', margin: 50 });
 
   generateHeader(doc);
   // generateCustomerInformation(doc, invoice);
-  generateInvoiceTable(doc, data.tif, 'tif');
-  generateInvoiceTable(doc, data.agb, 'agb');
-  generateInvoiceTable(doc, data.agt, 'agt');
-  generateInvoiceTable(doc, data.ekm, 'ekm');
-  generateInvoiceTable(doc, data.hkm, 'hkm');
-  generateInvoiceTable(doc, data.man, 'man');
-  generateInvoiceTable(doc, data.pbi, 'pbi');
-  generateInvoiceTable(doc, data.pmt, 'pmt');
-  generateInvoiceTable(doc, data.ptk, 'ptk');
-  generateInvoiceTable(doc, data.thp, 'thp');
+  if (type === 'multiple') {
+    generateInvoiceTable(doc, dataMultiple.tif, 'tif');
+    generateInvoiceTable(doc, dataMultiple.agb, 'agb');
+    generateInvoiceTable(doc, dataMultiple.agt, 'agt');
+    generateInvoiceTable(doc, dataMultiple.ekm, 'ekm');
+    generateInvoiceTable(doc, dataMultiple.hkm, 'hkm');
+    generateInvoiceTable(doc, dataMultiple.man, 'man');
+    generateInvoiceTable(doc, dataMultiple.pbi, 'pbi');
+    generateInvoiceTable(doc, dataMultiple.pmt, 'pmt');
+    generateInvoiceTable(doc, dataMultiple.ptk, 'ptk');
+    generateInvoiceTable(doc, dataMultiple.thp, 'thp');
+  } else {
+    generateInvoiceTable(doc, dataSingle, prodi);
+
+  }
   generateFooter(doc);
   // generateFooterUpdatedAt(doc, invoice);
   doc.end();
@@ -88,7 +92,6 @@ function generateInvoiceTable(
   //   diBuat: 'Dibuat',
   // });
   doc.font('Helvetica');
-  console.log('data', data);
   for (i = 0; i < data.length; i++) {
     // const position = invoiceTableTop + (i + 1) * 30;
     generateTableRow(doc, {
@@ -97,7 +100,7 @@ function generateInvoiceTable(
       penerbit: data[i]?.penerbit,
       tahunBuku: data[i]?.tahunBuku,
       diBuat: moment(data[i]?.diBuat).format('L'),
-      isGenerateData:true
+      isGenerateData: true
     });
   }
 }
@@ -122,11 +125,11 @@ function generateTableRow(
     penerbit: any;
     tahunBuku: any;
     diBuat: any;
-    isGenerateData?:boolean
+    isGenerateData?: boolean
   }
 ) {
   let yPos = doc.y;
-  
+
   doc
     .fontSize(8)
     .text(data.judulBuku, 50, yPos)

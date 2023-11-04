@@ -10,6 +10,8 @@ import {
   getRekapanPengajuanBukuUseCase,
   updatePengajuanBukuUseCase,
   cetakRekapanBukuUseCase,
+  changeStatusItemBukuPengajuanUseCase,
+  changeAllStatusItemBukuPengajuanUseCase,
 } from '../../usecase/PengajuanBuku';
 
 const pengajuanBukuRouter = express.Router();
@@ -50,5 +52,16 @@ pengajuanBukuRouter.get(
   '/cetak-rekapan',
   asyncErrorHandler(cetakRekapanBukuUseCase)
 );
+pengajuanBukuRouter.post(
+  '/change-status-item-buku',
+  asyncErrorHandler(changeStatusItemBukuPengajuanUseCase)
+);
+pengajuanBukuRouter.post(
+  '/change-all-status-item-buku',
+  asyncErrorHandler(changeAllStatusItemBukuPengajuanUseCase)
+);
+
+
 
 export default pengajuanBukuRouter;
+

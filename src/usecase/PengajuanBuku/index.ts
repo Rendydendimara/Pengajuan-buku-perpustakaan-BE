@@ -6,6 +6,7 @@ import KatalogBuku from '../../models/katalogBuku';
 import createRekapan from '../../utils/createRekapan';
 import { IBukuRekapan } from '../../interface';
 import moment from 'moment';
+import { findIndex } from 'lodash';
 
 export const createPengajuanBukuUseCase = async (
   req: Request,
@@ -102,11 +103,11 @@ export const updatePengajuanBukuUseCase = async (
       });
     }
 
-    existData.buku = buku;
+    // existData.buku = buku;
     // existData.jumlah = jumlah;
     existData.pesanAdmin = pesanAdmin;
     existData.pesanDosen = pesanDosen;
-    existData.status = status;
+    // existData.status = status;
 
     await existData.save();
 
@@ -241,7 +242,19 @@ export const cetakRekapanBukuUseCase = async (
   next: NextFunction
 ) => {
   try {
-    const data = await PengajuanBuku.find({ deletedAt: null })
+    const { tahun, prodi } = req.query;
+    let filterTahun: any = {
+      $ne: null
+    }
+
+    if (tahun) {
+      filterTahun = {
+        $gte: new Date(Number(tahun), 0, 31),
+        $lt: new Date(Number(tahun), 12, 31),
+      }
+    }
+
+    const data = await PengajuanBuku.find({ deletedAt: null, createdAt: filterTahun })
       .select('buku bukuLink createdAt dosenProdi')
       .populate({
         path: 'buku._id',
@@ -260,26 +273,53 @@ export const cetakRekapanBukuUseCase = async (
 
     data.forEach((dt: any) => {
       const { _id, buku, bukuLink, dosenProdi, createdAt } = dt;
-      dataResult.push({
-        _id,
-        buku,
-        bukuLink,
-        dosenProdi,
-        createdAt,
-        prodi: dt.dosenProdi.programStudi,
-      });
+      if (prodi) {
+        if (prodi === dosenProdi.programStudi) {
+          dataResult.push({
+            _id,
+            buku,
+            bukuLink,
+            dosenProdi,
+            createdAt,
+            prodi: dt.dosenProdi.programStudi,
+          });
+        }
+      } else {
+        dataResult.push({
+          _id,
+          buku,
+          bukuLink,
+          dosenProdi,
+          createdAt,
+          prodi: dt.dosenProdi.programStudi,
+        });
+      }
     });
-
-    let pbi: IBukuRekapan[] = filterData('pbi', dataResult);
-    let man: IBukuRekapan[] = filterData('man', dataResult);
-    let ekm: IBukuRekapan[] = filterData('ekm', dataResult);
-    let pmt: IBukuRekapan[] = filterData('pmt', dataResult);
-    let ptk: IBukuRekapan[] = filterData('ptk', dataResult);
-    let agt: IBukuRekapan[] = filterData('agt', dataResult);
-    let agb: IBukuRekapan[] = filterData('agb', dataResult);
-    let thp: IBukuRekapan[] = filterData('thp', dataResult);
-    let hkm: IBukuRekapan[] = filterData('hkm', dataResult);
-    let tif: IBukuRekapan[] = filterData('tif', dataResult);
+    let singleData: IBukuRekapan[] = []
+    let pbi: IBukuRekapan[] = []
+    let man: IBukuRekapan[] = []
+    let ekm: IBukuRekapan[] = []
+    let pmt: IBukuRekapan[] = []
+    let ptk: IBukuRekapan[] = []
+    let agt: IBukuRekapan[] = []
+    let agb: IBukuRekapan[] = []
+    let thp: IBukuRekapan[] = []
+    let hkm: IBukuRekapan[] = []
+    let tif: IBukuRekapan[] = []
+    if (prodi) {
+      singleData = filterData(prodi, dataResult);
+    } else {
+      pbi = filterData('pbi', dataResult);
+      man = filterData('man', dataResult);
+      ekm = filterData('ekm', dataResult);
+      pmt = filterData('pmt', dataResult);
+      ptk = filterData('ptk', dataResult);
+      agt = filterData('agt', dataResult);
+      agb = filterData('agb', dataResult);
+      thp = filterData('thp', dataResult);
+      hkm = filterData('hkm', dataResult);
+      tif = filterData('tif', dataResult);
+    }
 
     const invoicePath = `uploads/${new Date()
       .getTime()
@@ -297,7 +337,10 @@ export const cetakRekapanBukuUseCase = async (
         hkm,
         tif,
       },
-      invoicePath
+      singleData,
+      invoicePath,
+      prodi ? 'single' : 'multiple',
+      prodi
     );
     await delay(5000);
 
@@ -342,4 +385,86 @@ const filterData = (
       });
     });
   return result;
+};
+
+export const changeStatusItemBukuPengajuanUseCase = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { status, pengajuanId, bukuId } = req.body;
+    const data = await PengajuanBuku.findById(new mongoose.Types.ObjectId(pengajuanId));
+    if (!data) {
+      return res.status(400).send({
+        success: false,
+        data: null,
+        message: 'Pengajuan buku tidak ditemukan',
+      });
+    }
+
+    let dataBukuUpdate = data.buku;
+    const bukuIdObjectId = new mongoose.Types.ObjectId(bukuId)
+
+    const index = findIndex(dataBukuUpdate, ['_id', bukuIdObjectId]);
+    if (index != -1) {
+      dataBukuUpdate = [
+        ...dataBukuUpdate.slice(0, index),
+        {
+          ...dataBukuUpdate[index],
+          status: status
+        },
+        ...dataBukuUpdate.slice(index + 1, dataBukuUpdate.length),
+      ];
+    }
+
+    // console.log('dataBukuUpdate', dataBukuUpdate)
+    // data.status = status;
+    data.buku = dataBukuUpdate; //[] // pesan;
+    await data.save();
+
+    return res.send({
+      success: true,
+      data: null,
+      message: 'Success change status',
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const changeAllStatusItemBukuPengajuanUseCase = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { status, pengajuanId } = req.body;
+    const data = await PengajuanBuku.findById(new mongoose.Types.ObjectId(pengajuanId));
+    if (!data) {
+      return res.status(400).send({
+        success: false,
+        data: null,
+        message: 'Pengajuan buku tidak ditemukan',
+      });
+    }
+
+    let dataBukuUpdate = data.buku.map((dt) => {
+      return {
+        ...dt,
+        status: status
+      }
+    });
+
+    data.buku = dataBukuUpdate; //[] // pesan;
+    await data.save();
+
+    return res.send({
+      success: true,
+      data: null,
+      message: 'Success change status',
+    });
+  } catch (e) {
+    next(e);
+  }
 };
