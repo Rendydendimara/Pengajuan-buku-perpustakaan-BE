@@ -377,7 +377,7 @@ const filterData = (
           result.push({
             judulBuku: buku._id.judul,
             penulis: buku._id.penulis,
-            penerbit: buku._id.katalog.name,
+            penerbit: buku?._id?.katalog?.name ?? "-",
             tahunBuku: buku._id.tahunTerbit,
             diBuat: moment(dt.createdAt).format('L'),
           });

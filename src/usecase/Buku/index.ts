@@ -50,7 +50,7 @@ export const getListBukuUseCase = async (
     const resQuery: any = req.query;
     const { type, katalog, prodi } = resQuery;
     let filterType: any = { $ne: null };
-    let filterKatalog: any = { $ne: '507f191e810c19729de860ea' }; // dummy object id
+    let filterKatalog: any = { $ne: null };// { $ne: '507f191e810c19729de860ea' }; // dummy object id
     let filterProdi: any = { $ne: null };
 
     if (type) {
@@ -68,6 +68,12 @@ export const getListBukuUseCase = async (
       filterKatalog = { $eq: null };
     }
 
+    console.log({
+      deletedAt: null,
+      katalog: filterKatalog,
+      tipeBuku: filterType,
+      prodi: filterProdi,
+    })
     const data = await Buku.find({
       deletedAt: null,
       katalog: filterKatalog,
